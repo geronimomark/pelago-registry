@@ -1,0 +1,27 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  namespace: pelago
+  name: python-garbage-collector
+  labels:
+    app: python-garbage-collector
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: "OnFailure"
+          containers:
+          - name: python-garbage-collector
+            image: localhost:30007/python-garbage-collector:1.0
+            env:
+            - name: PYTHONWARNINGS
+              value: "ignore:Unverified HTTPS request"
+            - name: REGISTRY_URL
+              value: "https://registry-service.pelago.svc.cluster.local:5000"
+            - name: REGISTRY_CREDS
+              valueFrom:
+                secretKeyRef:
+                  name: python-garbage-collector-secret
+                  key: REGISTRY_CREDS
