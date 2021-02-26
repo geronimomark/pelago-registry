@@ -6,9 +6,12 @@
 - some local storage for redis and registry
 
 # Create dirs
+``` sh
 mkdir auth storage redis-storage certs
+```
 
 # Generate example user pass
+``` sh
 docker run \
 --entrypoint htpasswd \
 registry:2.7.0 \
@@ -18,8 +21,10 @@ docker run \
 --entrypoint htpasswd \
 registry:2.7.0 \
 -Bbn anotheruser anotherpassword >> auth/htpasswd
+```
 
 # Generate self-signed certs
+``` sh
 openssl req -newkey rsa:4096 \
     -x509 \
     -sha256 \
@@ -28,6 +33,7 @@ openssl req -newkey rsa:4096 \
     -out certs/tls.crt \
     -keyout certs/tls.key \
     -subj '/CN=registry-service.pelago.svc.cluster.local:5000'
+```
 
 # Deploy redis, registry and cronjob garbage-collector in k8s
 ``` sh
@@ -36,10 +42,8 @@ kubectl -n pelago apply -f redis
 kubectl -n pelago apply -f registry
 ```
 
-#######################################################################
-# Registry is accessible in node port 30007, in my case localhost:30007
-# Test the registry
-#######################################################################
+## Registry is accessible in node port 30007, in my case localhost:30007
+## Test the registry
 ``` sh
 docker pull nginx
 docker tag nginx localhost:30007/nginx:latest
